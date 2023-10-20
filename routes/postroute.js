@@ -138,4 +138,56 @@ postroute.delete("/delete/:id",auth,async(req,res)=>{
 })
 
 
+
+
+// Add a like to a post
+postroute.post("/addlike/:postid", auth, async (req, res) => {
+  try {
+    const { postid } = req.params;
+    const post = await Post.findById(postid);
+    
+    if (!post) {
+      return res.status(404).send("Post not found");
+    }
+
+    // Check if the user has already liked the post
+    if (post.likes.includes(req.body.userId)) {
+      // User has already liked, remove the like (dislike)
+      post.likes = post.likes.filter((userId) => userId != req.body.userId);
+    
+      console.log(req.body.userId);
+    } else {
+      // User has not liked, add the like
+      post.likes.push(req.body.userId);
+      console.log(req.body.userId);
+    }
+
+    await post.save();
+
+    res.status(200).send({ likes: post.likes.length }); // Return the updated number of likes
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+
+
+postroute.get('/:postId', async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const post = await Post.findById(postId)
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    res.status(200).json( post );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+
 module.exports=postroute

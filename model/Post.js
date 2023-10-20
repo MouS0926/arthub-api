@@ -12,7 +12,9 @@ image:String,
 publisher:String,
 category:String,
 userId:String,
-username:String
+username:String,
+likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+
 },
 {
     versionKey:false
